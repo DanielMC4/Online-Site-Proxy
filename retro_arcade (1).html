@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Retro Arcade — Multi Game Site</title>
+  <link href="https://fonts.googleapis.com/css2?family=Handlee&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#050a1a;
+      --accent:#00ffcc;
+      --accent-2:#00b3c6;
+      --muted:#c0c0c0;
+      --card:#0b1b2b;
+      --glass:rgba(0,0,0,0.4);
+      --shadow:0 6px 20px rgba(0,255,255,0.15);
+      font-size:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);font-family:'Handlee',system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--muted);scroll-behavior:smooth}
+    .app{max-width:1200px;margin:30px auto;padding:24px}
+
+    header{display:flex;align-items:center;gap:18px;margin-bottom:18px;position:relative}
+    .logo{width:72px;height:72px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:white;font-weight:700;box-shadow:var(--shadow);font-size:22px;position:relative;animation:sparkle 2s infinite alternate}
+    @keyframes sparkle{0%{transform:scale(1)}50%{transform:scale(1.1) rotate(3deg)}100%{transform:scale(1) rotate(-3deg)}}
+    h1{margin:0;font-size:32px;color:var(--accent)}
+    p.lead{margin:0;color:#a0e0ff;opacity:.85}
+
+    nav{display:flex;gap:8px;margin:18px 0;flex-wrap:wrap}
+    .tab{padding:8px 14px;border-radius:999px;background:linear-gradient(180deg,rgba(0,255,204,0.2),rgba(0,179,198,0.06));cursor:pointer;border:2px solid var(--accent);font-weight:700;transition:0.2s}
+    .tab.active{box-shadow:0 6px 18px rgba(0,255,255,0.3);transform:translateY(-2px)}
+
+    .content{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    .panel{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--shadow);transition:0.3s}
+    .panel:hover{box-shadow:0 12px 30px rgba(0,255,255,0.25);}
+    .sidebar .panel{position:sticky;top:24px}
+
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    button{font-family:'Handlee';cursor:pointer;padding:8px 14px;border-radius:8px;border:2px solid transparent;background:linear-gradient(180deg,#001f33,#004466);color:white;transition:0.2s;box-shadow:0 4px 12px rgba(0,255,255,0.1)}
+    .btn-accent{background:linear-gradient(180deg,var(--accent),var(--accent-2));color:white;border-color:rgba(0,255,255,0.2);}
+    .btn-accent:hover{transform:scale(1.05)}
+
+    .game-area{min-height:480px;display:flex;align-items:center;justify-content:center;position:relative;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#00101f,#002b44);}
+    canvas{display:block;border-radius:8px;image-rendering:pixelated}
+
+    .retro-btn{background:transparent;border:3px solid var(--accent);padding:6px 10px;border-radius:6px;color:var(--accent);font-weight:700;transition:0.2s}
+    .retro-btn:hover{background:var(--accent);color:#001a1a;transform:scale(1.05)}
+
+    footer{margin-top:24px;text-align:center;color:#0ff;opacity:.7}
+    @media (max-width:950px){.content{grid-template-columns:1fr}.sidebar{order:2}}
+  </style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="logo">ARC</div>
+  <div>
+    <h1>Retro Arcade — Multi Game Site</h1>
+    <p class="lead">Classic and modern games in one place! Select a tab or load an iframe game. Settings and themes included.</p>
+  </div>
+</header>
+
+<nav id="tabs"></nav>
+
+<div class="content">
+  <div>
+    <div class="panel game-area" id="game-panel">
+      <div id="game-root" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:24px;color:white">
+        <div style="text-align:center;max-width:760px">
+          <h2 id="game-title">Welcome to Retro Arcade</h2>
+          <p class="muted" id="game-desc">Pick a game from the tabs above to start playing or load an external game via iframe.</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-accent" id="play-btn">Start Game</button>
+          <button id="reset-btn">Reset High Score</button>
+          <button class="btn-accent" id="iframe-btn">Load Online Game</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="panel">
+      <h3>Controls</h3>
+      <div id="controls-text" class="instructions">Select a game to see controls.</div>
+    </div>
+
+    <div class="panel">
+      <h3>Settings</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label class="small">Volume <input id="volume" type="range" min="0" max="1" step="0.05" value="0.6"></label>
+        <label class="small">Theme <select id="theme-select"><option value="retro">Retro Cyan</option><option value="mono">Mono</option><option value="matrix">Matrix</option></select></label>
+        <label class="small">Player name <input id="player-name" placeholder="Player" maxlength="18"></label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>About</h3>
+      <p class="muted small">This arcade site allows local games and iframe-based online games. Use settings to switch themes, adjust volume, and personalize your experience.</p>
+    </div>
+  </aside>
+</div>
+
+<footer>
+  <small>Retro Arcade — HTML/CSS/JS • Local high scores • IFrame integration • Themes & animations</small>
+</footer>
+</div>
+
+<script>
+const GAMES=[];
+const app={currentGame:null,canvas:null,ctx:null,playerName:localStorage.getItem('arcade_player')||'Player',volume:Number(localStorage.getItem('arcade_vol')||0.6)};
+
+function byId(id){return document.getElementById(id)}
+byId('player-name').value=app.playerName;
+byId('volume').value=app.volume;
+byId('player-name').addEventListener('change',e=>{app.playerName=e.target.value||'Player';localStorage.setItem('arcade_player',app.playerName)})
+byId('volume').addEventListener('input',e=>{app.volume=Number(e.target.value);localStorage.setItem('arcade_vol',app.volume)})
+
+function registerGame(game){GAMES.push(game)}
+function renderTabs(){const tabs=byId('tabs');tabs.innerHTML='';GAMES.forEach((g,i)=>{const b=document.createElement('div');b.className='tab';b.textContent=g.name;if(i===0)b.classList.add('active');b.onclick=()=>{selectGame(i)};tabs.appendChild(b)})}
+function selectGame(index){document.querySelectorAll('.tab').forEach((n,ni)=>n.classList.toggle('active',ni===index));const g=GAMES[index];app.currentGame=g;byId('game-title').textContent=g.name;byId('game-desc').textContent=g.description;byId('controls-text').innerHTML='<div class="small muted">'+g.controls.split('\n').join('<br>')+'</div>';g.onShow&&g.onShow();}
+
+byId('play-btn').addEventListener('click',()=>{if(app.currentGame)startGame(app.currentGame);else alert('Pick a game first')})
+byId('reset-btn').addEventListener('click',()=>{if(app.currentGame){app.currentGame.resetBest();byId('best-score').textContent=app.currentGame.getBest()}})
+
+// iframe loader
+byId('iframe-btn').addEventListener('click',()=>{
+  cleanupContainer();
+  const url=prompt('Enter game URL (make sure CORS allows embedding):');
+  if(!url)return;
+  const root=byId('game-root');
+  root.innerHTML='';
+  const iframe=document.createElement('iframe');
+  iframe.src=url;
+  iframe.style.width='100%';
+  iframe.style.height='500px';
+  iframe.style.border='2px solid var(--accent)';
+  iframe.style.borderRadius='10px';
+  root.appendChild(iframe);
+})
+
+function startGame(game){const root=byId('game-root');if(root._cleanup)root._cleanup();root.innerHTML='';game.start(root,()=>{},()=>{});}
+function cleanupContainer(){const root=byId('game-root');if(root._cleanup)root._cleanup();}
+
+// theme switcher
+byId('theme-select').addEventListener('change',e=>{
+  switch(e.target.value){
+    case 'mono':document.documentElement.style.setProperty('--accent','#999');document.documentElement.style.setProperty('--accent-2','#bbb');break;
+    case 'matrix':document.documentElement.style.setProperty('--accent','#00ff00');document.documentElement.style.setProperty('--accent-2','#007700');break;
+    default:document.documentElement.style.setProperty('--accent','#00ffcc');document.documentElement.style.setProperty('--accent-2','#00b3c6');
+  }
+})
+
+renderTabs();selectGame(0);
+</script>
+</body>
+</html>
